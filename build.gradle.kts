@@ -12,6 +12,8 @@ repositories {
 dependencies {
 implementation("org.mongodb:mongodb-driver-sync:5.2.0")
 implementation("io.javalin:javalin:6.3.0")
+implementation("org.slf4j:slf4j-simple:2.0.16")
+
 
 testImplementation(platform("org.junit:junit-bom:5.9.1"))
 testImplementation("org.junit.jupiter:junit-jupiter")

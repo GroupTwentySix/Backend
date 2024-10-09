@@ -9,7 +9,7 @@ public class Main {
         System.out.println("[DEBUG] App Start, Hello World");
         var app = Javalin.create(/*config*/)
                 .get("/", ctx -> ctx.result("Hello World"))
-                .start(7070);
+                .start(7071);
         System.out.println("[DEBUG] Route / started at http://localhost:7070/");
     }
 }
