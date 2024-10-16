@@ -36,7 +36,7 @@ public class Main {
 
         // Set up user and admin routes
 
-        // test
+
         app.get("/user", AuthController.userInfo, Roles.USER, Roles.ADMIN);
         app.get("/admin", AuthController.adminInfo, Roles.ADMIN);
         app.post("/logout", AuthController.logout);
