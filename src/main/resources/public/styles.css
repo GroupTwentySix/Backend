@@ -1,0 +1,127 @@
+:root {
+    --primary-color: #0077be;
+    --secondary-color: #00a8e8;
+    --background-color: #f0f8ff;
+    --text-color: #333;
+    --form-background: #fff;
+    --form-shadow: rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode {
+    --primary-color: #00a8e8;
+    --secondary-color: #0077be;
+    --background-color: #1a1a2e;
+    --text-color: #f0f8ff;
+    --form-background: #16213e;
+    --form-shadow: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h1, h2 {
+    color: var(--primary-color);
+}
+
+#theme-toggle {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#auth-forms {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-container {
+    background: var(--form-background);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px var(--form-shadow);
+    width: 45%;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input, select, button {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    background-color: var(--form-background);
+    color: var(--text-color);
+}
+
+button {
+    background-color: var(--primary-color);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+}
+
+#user-info, #admin-info {
+    background: var(--form-background);
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px var(--form-shadow);
+}
+
+.product, .basket-item {
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: var(--form-background);
+}
+
+.product img, .basket-item img {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+}
+
+#products-container, #basket-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+#admin-panel {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: var(--form-background);
+    border-radius: 5px;
+}
