@@ -1,9 +1,9 @@
 const API_URL = 'http://localhost:7000';
 let token = localStorage.getItem('jwt_token');
 
-// Updates the UI based on login and admin status
+// Update the UI based on login and admin status
 function updateUI(isLoggedIn, isAdmin) {
-    // Show or hide elements based on user login status
+    // Show or hide elements based on the user login status
     document.getElementById('auth-forms').style.display = isLoggedIn ? 'none' : 'flex';
     document.getElementById('user-info').style.display = isLoggedIn ? 'block' : 'none';
     document.getElementById('product-list').style.display = isLoggedIn ? 'block' : 'none';
@@ -11,11 +11,11 @@ function updateUI(isLoggedIn, isAdmin) {
     document.getElementById('admin-panel').style.display = isAdmin ? 'block' : 'none';
 
     if (isLoggedIn) {
-        fetchProducts(); // Load products if user is logged in
+        fetchProducts(); // Load the products if user is logged in
 
         const username = document.getElementById('user-info-content').dataset.username;
         if (username) {
-            fetchBasket(); // Load user's basket if a username is available
+            fetchBasket(); // Load the user's basket if a username is available
         }
     }
 
@@ -28,7 +28,7 @@ function updateUI(isLoggedIn, isAdmin) {
 function register(event) {
     event.preventDefault(); // Prevent default form submission
 
-    // Capture user inputs from the form
+    // Captures user inputs from the form
     const username = document.getElementById('register-username').value;
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
@@ -75,7 +75,7 @@ function login(event) {
             // Check if the user is an admin
             const isAdmin = data.role === 'ADMIN';
 
-            // Update the UI and fetch user information
+            // Update the UI and fetch the user information
             updateUI(true, isAdmin);
             fetchUserInfo();
         })
@@ -90,7 +90,7 @@ function logout() {
         headers: { 'Authorization': `Bearer ${token}` }
     })
         .then(() => {
-            // Clear local storage and token, update the UI to reflect logged-out status
+            // Clears local storage and token, update the UI to reflect logged-out status
             localStorage.removeItem('jwt_token');
             token = null;
             updateUI(false);
@@ -109,7 +109,7 @@ function fetchUserInfo() {
     })
         .then(response => response.json())
         .then(data => {
-            // Display the user's information and update the dataset
+            // Display the user's information and update the data set
             document.getElementById('user-info-content').textContent = `Username: ${data.username}, Role: ${data.role}`;
             document.getElementById('user-info-content').dataset.username = data.username;
 
@@ -214,7 +214,7 @@ function addProduct(event) {
     const imageUrl = document.getElementById('product-image').value;
     const price = parseFloat(document.getElementById('product-price').value);
 
-    // Send product data to the backend to add it
+    // Send the product data to the backend to add it
     fetch(`${API_URL}/products`, {
         method: 'POST',
         headers: {
