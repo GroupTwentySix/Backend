@@ -52,6 +52,7 @@ public class Main {
         app.delete("/basket/{username}/{productId}", ProductController.removeFromBasket, Roles.USER, Roles.ADMIN);
         app.get("/basket/{username}", ProductController.getBasket, Roles.USER, Roles.ADMIN);
         app.delete("/products/{productId}", ProductController.removeProduct, Roles.ADMIN);
+        app.get("/products/search", ProductController.searchProducts);
 
         // Add shutdown hook to close MongoDB connection
         Runtime.getRuntime().addShutdownHook(new Thread(MongoDBConnection::close));

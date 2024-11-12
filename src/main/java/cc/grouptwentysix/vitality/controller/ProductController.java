@@ -99,4 +99,20 @@ public class ProductController {
             ctx.status(404).result("Product not found");
         }
     };
+
+
+
+
+    //SEARCH PRODUCTS
+    public static Handler searchProducts = ctx -> {
+        String query = ctx.queryParam("q");
+        MongoCollection<Document> products = MongoDBConnection.getProductsCollection();
+        List<Document> productResult = products.find(Filters.regex("name", query, "i")).into(new ArrayList<>());
+        ctx.json(productResult);
+
+
+
+
+    };
 }
+
