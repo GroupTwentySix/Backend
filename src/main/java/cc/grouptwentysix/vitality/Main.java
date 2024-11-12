@@ -8,6 +8,7 @@ import cc.grouptwentysix.vitality.database.MongoDBConnection;
 import cc.grouptwentysix.vitality.model.User;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
+import io.javalin.http.staticfiles.Location;
 
 public class Main {
     public static void main(String[] args) {
@@ -22,8 +23,10 @@ public class Main {
 
         // Create Javalin app and configure static files
         Javalin app = Javalin.create(config -> {
-            config.staticFiles.add("/public");
+            // Serve static files from 'src/main/resources/public'
+            config.staticFiles.add("/public", Location.CLASSPATH);
         }).start(7000);
+
 
         // Set up authentication routes
         app.post("/register", AuthController.register);
@@ -52,5 +55,9 @@ public class Main {
 
         // Add shutdown hook to close MongoDB connection
         Runtime.getRuntime().addShutdownHook(new Thread(MongoDBConnection::close));
+
+
     }
+
+
 }
