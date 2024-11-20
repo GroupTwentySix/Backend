@@ -24,16 +24,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+import static cc.grouptwentysix.vitality.Main.dotenv;
+
 public class AuthController {
 
-    // todo: Move JWT_SECRET to a secure configuration or environment variable
-
-    private static final String JWT_SECRET = "your_jwt_secret";
+    private static final String JWT_SECRET = dotenv.get("JWT_SECRET");
     private static final long EXPIRATION_TIME = 864_000_000; // 10 days
     private static final EmailService emailService = new EmailService();
-
-    // Creates and configures the JWT provider for user authentication
-
 
     public static JWTProvider<User> createJWTProvider() {
         JWTGenerator<User> generator = (user, alg) -> {
@@ -76,7 +73,7 @@ public class AuthController {
             // Handles user login, verifying credentials and issuing JWT
 
             try {
-                emailService.sendVerificationEmail(user.getEmail(), user.getUsername(), verificationToken);
+                emailService.sendVerificationEmail(ctx, user.getEmail(), user.getUsername(), verificationToken);
                 ctx.status(201).result("User registered successfully. Please check your email to verify your account.");
             } catch (Exception e) {
                 ctx.status(500).result("User registered, but failed to send verification email. Please contact support.");

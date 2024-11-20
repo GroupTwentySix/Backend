@@ -6,13 +6,19 @@ import cc.grouptwentysix.vitality.auth.jwt.JavalinJWT;
 import cc.grouptwentysix.vitality.controller.ProductController;
 import cc.grouptwentysix.vitality.database.MongoDBConnection;
 import cc.grouptwentysix.vitality.model.User;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 import io.javalin.http.staticfiles.Location;
 
 public class Main {
+
+    public static Dotenv dotenv;
+
+
     public static void main(String[] args) {
-        // Initialize MongoDB connection
+
+        dotenv = Dotenv.configure().ignoreIfMissing().load();
         MongoDBConnection.connect();
 
         // Create JWT provider for user authentication
@@ -25,7 +31,7 @@ public class Main {
         Javalin app = Javalin.create(config -> {
             // Serve static files from 'src/main/resources/public'
             config.staticFiles.add("/public", Location.CLASSPATH);
-        }).start(7000);
+        }).start(Integer.parseInt(dotenv.get("PORT")));
 
 
         // Set up authentication routes

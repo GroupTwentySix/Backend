@@ -1,0 +1,21 @@
+services:
+  app:
+    build: .
+    ports:
+      - "7000:7000"
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+
+  mongodb:
+    image: mongo:8.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
+
+
