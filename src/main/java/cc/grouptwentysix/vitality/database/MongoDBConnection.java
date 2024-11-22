@@ -18,7 +18,8 @@ public class MongoDBConnection {
         int attempt = 0;
         while (attempt < MAX_RETRIES) {
             try {
-                String connectionString = "mongodb://mongodb:27017";
+                String connectionString = "mongodb://"+dotenv.get("DB_HOST")+":"+dotenv.get("DB_PORT");
+
                 mongoClient = MongoClients.create(connectionString);
                 database = mongoClient.getDatabase("vitality");
                 System.out.println("Connected to the database successfully");
