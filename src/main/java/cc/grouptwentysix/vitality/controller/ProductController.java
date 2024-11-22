@@ -114,5 +114,55 @@ public class ProductController {
 
 
     };
+
+    //WishList
+    public static Handler addToWishList = ctx -> {
+        String username = ctx.pathParam("username");
+        String productId = ctx.pathParam("productId");
+        MongoCollection<Document> users = MongoDBConnection.getUsersCollection();
+        users.updateOne(
+                Filters.eq("username", username),
+                new Document("$addToSet", new Document("wishlist", productId))
+        );
+        ctx.status(200).result("Product added to basket");
+    };
+
+    public static Handler removeFromWishList = ctx -> {
+        String username = ctx.pathParam("username");
+        String productId = ctx.pathParam("productId");
+        MongoCollection<Document> users = MongoDBConnection.getUsersCollection();
+        users.updateOne(
+                Filters.eq("username", username),
+                new Document("$pull", new Document("wishlist", productId))
+        );
+        ctx.status(200).result("Product removed from wishlist");
+    };
+
+    public static Handler getWishList = ctx -> {
+        String username = ctx.pathParam("username");
+        MongoCollection<Document> users = MongoDBConnection.getUsersCollection();
+        Document user = users.find(Filters.eq("username", username)).first();
+        if (user != null) {
+            List<String> wishlistIds = user.getList("wishlist", String.class);
+            MongoCollection<Document> products = MongoDBConnection.getProductsCollection();
+            List<Product> wishlist = new ArrayList<>();
+            for (String id : wishlistIds) {
+                Document doc = products.find(Filters.eq("_id", new ObjectId(id))).first();
+                if (doc != null) {
+                    Product product = new Product(
+                            doc.getObjectId("_id").toString(),
+                            doc.getString("name"),
+                            doc.getString("description"),
+                            doc.getString("imageUrl"),
+                            doc.getDouble("price")
+                    );
+                    wishlist.add(product);
+                }
+            }
+            ctx.json(wishlist);
+        } else {
+            ctx.status(404).result("User not found");
+        }
+    };
 }
 

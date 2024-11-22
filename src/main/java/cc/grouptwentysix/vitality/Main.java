@@ -57,6 +57,11 @@ public class Main {
         app.post("/basket/{username}/{productId}", ProductController.addToBasket, Roles.USER, Roles.ADMIN);
         app.delete("/basket/{username}/{productId}", ProductController.removeFromBasket, Roles.USER, Roles.ADMIN);
         app.get("/basket/{username}", ProductController.getBasket, Roles.USER, Roles.ADMIN);
+
+        app.post("/wishlist/{username}/{productId}", ProductController.addToWishList, Roles.USER, Roles.ADMIN);
+        app.delete("/wishlist/{username}/{productId}", ProductController.removeFromWishList, Roles.USER, Roles.ADMIN);
+        app.get("/wishlist/{username}", ProductController.getWishList, Roles.USER, Roles.ADMIN);
+
         app.delete("/products/{productId}", ProductController.removeProduct, Roles.ADMIN);
         app.get("/products/search", ProductController.searchProducts);
 

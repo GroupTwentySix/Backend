@@ -8,6 +8,7 @@ function updateUI(isLoggedIn, isAdmin) {
     document.getElementById('user-info').style.display = isLoggedIn ? 'block' : 'none';
     document.getElementById('product-list').style.display = isLoggedIn ? 'block' : 'none';
     document.getElementById('basket').style.display = isLoggedIn ? 'block' : 'none';
+    document.getElementById('wishlist').style.display = isLoggedIn ? 'block' : 'none';
     document.getElementById('admin-panel').style.display = isAdmin ? 'block' : 'none';
 
     if (isLoggedIn) {
@@ -16,6 +17,7 @@ function updateUI(isLoggedIn, isAdmin) {
         const username = document.getElementById('user-info-content').dataset.username;
         if (username) {
             fetchBasket(); // Load the user's basket if a username is available
+            fetchWishList();
         }
     }
 
@@ -249,6 +251,7 @@ function fetchProducts() {
                 <p>${product.description}</p>
                 <p>Price: $${product.price.toFixed(2)}</p>
                 <button onclick="addToBasket('${product.id}')">Add to Basket</button>
+                <button onclick="addToWishList('${product.id}')">Add to Wishlist</button>
             `;
                 container.appendChild(productElement);
             });
@@ -272,6 +275,21 @@ function addToBasket(productId) {
         .catch(error => console.error('Error:', error));
 }
 
+function addToWishList(productId) {
+    const username = document.getElementById('user-info-content').dataset.username;
+
+    // Send request to add the product to the user's basket
+    fetch(`${API_URL}/wishlist/${username}/${productId}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+        .then(() => {
+            alert('Product added to wishlist');
+            fetchWishList(); // Refresh basket after adding the product
+        })
+        .catch(error => console.error('Error:', error));
+}
+
 // Removes a product from the user's basket
 function removeFromBasket(productId) {
     const username = document.getElementById('user-info-content').dataset.username;
@@ -284,6 +302,21 @@ function removeFromBasket(productId) {
         .then(() => {
             alert('Product removed from basket');
             fetchBasket(); // Refresh basket after removing the product
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function removeFromWishList(productId) {
+    const username = document.getElementById('user-info-content').dataset.username;
+
+    // Send request to remove the product from the basket
+    fetch(`${API_URL}/wishlist/${username}/${productId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+        .then(() => {
+            alert('Product removed from wishlist');
+            fetchWishList(); // Refresh basket after removing the product
         })
         .catch(error => console.error('Error:', error));
 }
@@ -326,6 +359,46 @@ function fetchBasket() {
         .catch(error => {
             console.error('Error:', error.message);
             document.getElementById('basket-container').innerHTML = '<p>Unable to fetch basket</p>';
+        });
+}
+
+function fetchWishList() {
+    const username = document.getElementById('user-info-content').dataset.username;
+
+    if (!username) {
+        console.error('Username not found');
+        return;
+    }
+
+    fetch(`${API_URL}/wishlist/${username}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('User not found');
+            }
+            return response.json();
+        })
+        .then(products => {
+            const container = document.getElementById('wishlist-container');
+            container.innerHTML = ''; // Clear current basket
+
+            // Display each product in the basket dynamically
+            products.forEach(product => {
+                const productElement = document.createElement('div');
+                productElement.className = 'wishlist-item';
+                productElement.innerHTML = `
+                <img src="${product.imageUrl}" alt="${product.name}">
+                <h3>${product.name}</h3>
+                <p>Price: $${product.price.toFixed(2)}</p>
+                <button onclick="removeFromWishList('${product.id}')">Remove</button>
+            `;
+                container.appendChild(productElement);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            document.getElementById('wishlist-container').innerHTML = '<p>Unable to fetch wishlist</p>';
         });
 }
 

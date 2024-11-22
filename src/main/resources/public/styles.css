@@ -123,6 +123,27 @@ button:hover {
     gap: 20px;
 }
 
+#products-container, #wishlist-container {
+    /*Grid layout for product and basket items*/
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.product img, .wishlist-item img {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+}
+
+.product, .wishlist-item {
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: var(--form-background);
+}
+
 #admin-panel {
     margin-top: 20px;
     padding: 20px;
