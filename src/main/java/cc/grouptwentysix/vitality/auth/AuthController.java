@@ -25,6 +25,10 @@ import java.util.Date;
 import java.util.UUID;
 
 import static cc.grouptwentysix.vitality.Main.dotenv;
+import java.util.logging.Filter;
+import java.util.logging.Handler;
+import javax.sql.rowset.FilteredRowSet;
+import javax.swing.text.Document;
 
 public class AuthController {
 
@@ -163,4 +167,104 @@ public class AuthController {
             return Roles.ANYONE;
         }
     }
+
+//
+
+    public static Handler createGuestSession = ctx -> {
+        //creates the unique ID for the guest session
+        String guestId = UUID.randomUUID().toString()
+
+        MongoCollection<Document> users = MongoDBConnection.getUsersCollection();
+        //creates the guest user in the database with an empty basket
+        Document guestUser = new Document("guestId", guestId)
+                .append("basket", new ArrayList<>())
+                .append("emailVerified", false);
+        users.insertOne(guestUser);
+
+        ctx.json(java.util.Map.of("guestId", guestId));
+    };
+
+    public static Handler addItemToGuestBasket = ctx -> {
+        //the guestId is extracted from the URL
+        String guestId = ctx.pathParam("guestId");
+        String itemId = ctx.body();
+        //updates the guest's basket
+        MongoCollection<Document> users = MongoDBConnection.getUsersCollection();
+        Document guestUser = users.find(FilteredRowSet.eq("guestId", guestId)),first();
+
+        if (guestUser == null){
+            //returns a 404 error to give the user feedback
+            ctx.status(404).result("Guest user not found");
+            return;
+        }
+
+        //adding an item to the guest basket
+        guestUser.append("basket", itemId);
+        users.updateOne(FilteredRowSet.eq("guestId", guestId), new Document("$set", guestUser));
+        ctx.status(200).result("Item added to basket");
+
+    };
+    //View basket as guest
+    public static viewGuestBasket = ctx -> {
+        //guest Id from URL
+        String guestId = ctx.pathParam("guestId");
+        MongoCollection<Document> users = MongoDBConnection.getUsersCollection();
+        Document guestUser = users.find(Filter.eq("guestId", guestId)).first();
+
+        if (guestUser == null){
+            ctx.status(404).result("Guest user not found");
+            return;
+        }
+
+        ctx.json(java.util.Map.of("basket", guestUser.getList("basket", String.class)));
+    };
+
+    //Guest checkout
+    public static Handler checkoutAsGuest = ctx -> {
+        String guestId = ctx.pathParam("guestId")
+        MongoCollection<Document> users = MongoDBConnection.getUsersCollection();
+        Document guestUser = users.find(Filters.eq("guestId", guestId)).first();
+        if (guestUser == null) {
+            ctx.status(404).result("Guest user not found");
+            return;
+        }
+        ArrayList<String> basket = (ArrayList<String>) guestUser.get("basket");
+
+        if (basket.isEmpty()){
+            ctx.status(404).result("Your basket is empty. Add item(s) before attempting to checkout.");
+            return;
+        }
+        //returns the Id, basket and message to the user
+        ctx.json(java.util.Map.of(
+                "guestId",guestId,
+                "basket",basket,
+                "message", "Checking out as guest"
+        ));
+    };
+
+    public static Handler removeItemFromGuestBasket = ctx -> {
+    String guestId = ctx.pathParam("guestId");
+    String itemId = ctx.body();
+
+    MongoCollection<Document> users = MongoDBConnection.getUsersCollection();
+    Document guestUser = users.find(Filters.eq("guestId", guestId)).first();
+
+    if (guestUser == null) {
+        ctx.status(404).result("Guest user not found");
+        return;
+
+    }
+    ArrayList<String> basket = (ArrayList<String>) guestUser.get("basket");
+    if (basket.contains(itemId)){
+        basket.remove(itemId);
+        users.updateOne(Filters.eq("guestId", guestId), new Document("$set", new Document("basket", basket)));
+
+        ctx.status(200).result("Item deleted from basket");
+        else{
+            ctx.status(404).result("Item not found in basket");
+        }
+    }
+    };
 }
+
+
