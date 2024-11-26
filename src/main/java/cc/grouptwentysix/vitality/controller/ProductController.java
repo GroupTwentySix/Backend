@@ -101,17 +101,13 @@ public class ProductController {
     };
 
 
-
-
     //SEARCH PRODUCTS
     public static Handler searchProducts = ctx -> {
-        String query = ctx.queryParam("q");
-        MongoCollection<Document> products = MongoDBConnection.getProductsCollection();
+        String query = ctx.queryParam("q"); //extract query parameter
+        MongoCollection<Document> products = MongoDBConnection.getProductsCollection(); //retrieve products collection from database
         List<Document> productResult = products.find(Filters.regex("name", query, "i")).into(new ArrayList<>());
-        ctx.json(productResult);
-
-
-
+        //get product that was searched for
+        ctx.json(productResult); //return products
 
     };
 
