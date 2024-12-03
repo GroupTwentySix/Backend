@@ -1,5 +1,5 @@
 package cc.grouptwentysix.vitality;
-
+import cc.grouptwentysix.vitality.util.RateLimiter;
 import cc.grouptwentysix.vitality.auth.AuthController;
 import cc.grouptwentysix.vitality.auth.jwt.JWTProvider;
 import cc.grouptwentysix.vitality.auth.jwt.JavalinJWT;
@@ -10,6 +10,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 import io.javalin.http.staticfiles.Location;
+
 
 public class Main {
 
@@ -33,6 +34,13 @@ public class Main {
             config.staticFiles.add("/public", Location.CLASSPATH);
         }).start(Integer.parseInt(dotenv.get("PORT")));
 
+        //guest rate limiting
+        app.before("/api/guest/*", ctx -> {
+            String guestId = ctx.queryParam("guestId");
+            if (guestId == null || !guestRateLimiter.isAllowed(guestId)) {
+                ctx.status(429).result("Too many requests. Please try again later.");
+            }
+        });
 
         // Set up authentication routes
         app.post("/register", AuthController.register);
@@ -44,7 +52,6 @@ public class Main {
         app.before("/logout", decodeHandler);
 
         // Set up user and admin routes
-
 
         app.get("/user", AuthController.userInfo, Roles.USER, Roles.ADMIN);
         app.get("/admin", AuthController.adminInfo, Roles.ADMIN);
@@ -64,6 +71,15 @@ public class Main {
 
         app.delete("/products/{productId}", ProductController.removeProduct, Roles.ADMIN);
         app.get("/products/search", ProductController.searchProducts);
+
+
+        //set up guest routes
+        app.post("/api/guest", AuthController.createGuestSession);
+        app.post("/api/guest/:guestId/basket/add", AuthController.addItemToGuestBasket);
+        app/get("/api/guest/:guestId/basket", AuthController.viewGuestBasket);
+        app.delete("/api/guest/:guestId/basket/remove", AuthController.removeItemFromGuestBasket);
+        app.post("/api/guest/:guestId/checkout", AuthController.checkoutAsGuest);
+
 
         // Add shutdown hook to close MongoDB connection
         Runtime.getRuntime().addShutdownHook(new Thread(MongoDBConnection::close));
