@@ -1,4 +1,5 @@
 package cc.grouptwentysix.vitality;
+
 import cc.grouptwentysix.vitality.util.RateLimiter;
 import cc.grouptwentysix.vitality.auth.AuthController;
 import cc.grouptwentysix.vitality.auth.jwt.JWTProvider;
@@ -11,11 +12,9 @@ import io.javalin.Javalin;
 import io.javalin.http.Handler;
 import io.javalin.http.staticfiles.Location;
 
-
 public class Main {
 
     public static Dotenv dotenv;
-
 
     public static void main(String[] args) {
 
@@ -28,13 +27,16 @@ public class Main {
         // Create JWT decode handler for protected routes
         Handler decodeHandler = JavalinJWT.createHeaderDecodeHandler(jwtProvider);
 
+        // Create a RateLimiter for guests (10 requests per minute per guest)
+        RateLimiter guestRateLimiter = RateLimiter.perMinute(10);
+
         // Create Javalin app and configure static files
         Javalin app = Javalin.create(config -> {
             // Serve static files from 'src/main/resources/public'
             config.staticFiles.add("/public", Location.CLASSPATH);
         }).start(Integer.parseInt(dotenv.get("PORT")));
 
-        //guest rate limiting
+        // Guest rate limiting
         app.before("/api/guest/*", ctx -> {
             String guestId = ctx.queryParam("guestId");
             if (guestId == null || !guestRateLimiter.isAllowed(guestId)) {
@@ -52,7 +54,6 @@ public class Main {
         app.before("/logout", decodeHandler);
 
         // Set up user and admin routes
-
         app.get("/user", AuthController.userInfo, Roles.USER, Roles.ADMIN);
         app.get("/admin", AuthController.adminInfo, Roles.ADMIN);
         app.post("/logout", AuthController.logout);
@@ -72,20 +73,14 @@ public class Main {
         app.delete("/products/{productId}", ProductController.removeProduct, Roles.ADMIN);
         app.get("/products/search", ProductController.searchProducts);
 
-
-        //set up guest routes
+        // Set up guest routes
         app.post("/api/guest", AuthController.createGuestSession);
         app.post("/api/guest/:guestId/basket/add", AuthController.addItemToGuestBasket);
-        app/get("/api/guest/:guestId/basket", AuthController.viewGuestBasket);
+        app.get("/api/guest/:guestId/basket", AuthController.viewGuestBasket);
         app.delete("/api/guest/:guestId/basket/remove", AuthController.removeItemFromGuestBasket);
         app.post("/api/guest/:guestId/checkout", AuthController.checkoutAsGuest);
 
-
         // Add shutdown hook to close MongoDB connection
         Runtime.getRuntime().addShutdownHook(new Thread(MongoDBConnection::close));
-
-
     }
-
-
 }
