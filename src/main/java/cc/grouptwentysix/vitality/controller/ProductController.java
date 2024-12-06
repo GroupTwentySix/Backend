@@ -106,13 +106,24 @@ public class ProductController {
     //SEARCH PRODUCTS
     public static Handler searchProducts = ctx -> {
         String query = ctx.queryParam("q");
+        if (query == null || query.isEmpty()) {
+            ctx.status(400).result("Query parameter 'q' is required");
+            return;
+        }
+
         MongoCollection<Document> products = MongoDBConnection.getProductsCollection();
-        List<Document> productResult = products.find(Filters.regex("name", query, "i")).into(new ArrayList<>());
-        ctx.json(productResult);
-
-
-
-
+        List<Product> productList = new ArrayList<>();
+        for (Document doc : products.find(Filters.regex("name", query, "i"))) {
+            Product product = new Product(
+                    doc.getObjectId("_id").toString(),
+                    doc.getString("name"),
+                    doc.getString("description"),
+                    doc.getString("imageUrl"),
+                    doc.getDouble("price")
+            );
+            productList.add(product);
+        }
+        ctx.json(productList);
     };
 
     //WishList
