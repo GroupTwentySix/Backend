@@ -6,14 +6,18 @@ public class Product {
     private String description;
     private String imageUrl;
     private double price;
+    private Integer quantity;
+
 
     // Constructor
-    public Product(String id, String name, String description, String imageUrl, double price) {
+    public Product(String id, String name, String description, String imageUrl, double price, int quantity) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
         this.price = price;
+        this.quantity = quantity;
+
     }
 
     public Product() {}
@@ -59,4 +63,7 @@ public class Product {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
 }

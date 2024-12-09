@@ -25,10 +25,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import static cc.grouptwentysix.vitality.Main.dotenv;
-import java.util.logging.Filter;
-import java.util.logging.Handler;
-import javax.sql.rowset.FilteredRowSet;
-import javax.swing.text.Document;
 
 public class AuthController {
 
@@ -168,8 +164,14 @@ public class AuthController {
         }
     }
 
-//
 
+    ///************************************************
+    /// Jaskaran's code for a guest basket.
+    /// Commented out because his contribution is valid but there are some flaws that need to be fixed that prevent compilation.
+    ///************************************************
+
+
+    /*
     public static Handler createGuestSession = ctx -> {
         //creates the unique ID for the guest session
         String guestId = UUID.randomUUID().toString()
@@ -204,6 +206,8 @@ public class AuthController {
         ctx.status(200).result("Item added to basket");
 
     };
+
+
     //View basket as guest
     public static viewGuestBasket = ctx -> {
         //guest Id from URL
@@ -265,6 +269,7 @@ public class AuthController {
         }
     }
     };
+    */
 }
 
 

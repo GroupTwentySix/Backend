@@ -18,7 +18,7 @@ public class MongoDBConnection {
         int attempt = 0;
         while (attempt < MAX_RETRIES) {
             try {
-                String connectionString = "mongodb://"+dotenv.get("DB_HOST")+":"+dotenv.get("DB_PORT");
+                String connectionString = "mongodb://" + dotenv.get("DB_HOST") + ":" + dotenv.get("DB_PORT");
 
                 mongoClient = MongoClients.create(connectionString);
                 database = mongoClient.getDatabase("vitality");
@@ -44,6 +44,10 @@ public class MongoDBConnection {
 
     public static MongoCollection<Document> getProductsCollection() {
         return database.getCollection("products");
+    }
+
+    public static MongoCollection<Document> getCategoriesCollection() {
+        return database.getCollection("categories");
     }
 
     public static void close() {

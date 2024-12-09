@@ -3,6 +3,7 @@ package cc.grouptwentysix.vitality;
 import cc.grouptwentysix.vitality.auth.AuthController;
 import cc.grouptwentysix.vitality.auth.jwt.JWTProvider;
 import cc.grouptwentysix.vitality.auth.jwt.JavalinJWT;
+import cc.grouptwentysix.vitality.controller.CategoryController;
 import cc.grouptwentysix.vitality.controller.ProductController;
 import cc.grouptwentysix.vitality.database.MongoDBConnection;
 import cc.grouptwentysix.vitality.model.User;
@@ -10,6 +11,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 import io.javalin.http.staticfiles.Location;
+import io.javalin.plugin.bundled.CorsPluginConfig;
 
 public class Main {
 
@@ -31,6 +33,9 @@ public class Main {
         Javalin app = Javalin.create(config -> {
             // Serve static files from 'src/main/resources/public'
             config.staticFiles.add("/public", Location.CLASSPATH);
+
+            config.bundledPlugins.enableCors(cors -> {
+                cors.addRule(CorsPluginConfig.CorsRule::anyHost);});
         }).start(Integer.parseInt(dotenv.get("PORT")));
 
 
@@ -63,13 +68,14 @@ public class Main {
         app.get("/wishlist/{username}", ProductController.getWishList, Roles.USER, Roles.ADMIN);
 
         app.delete("/products/{productId}", ProductController.removeProduct, Roles.ADMIN);
-        app.get("/products/search", ProductController.searchProducts);
 
-        // Add shutdown hook to close MongoDB connection
+        app.get("/categories", CategoryController.getAllCategories);
+        app.post("/categories", CategoryController.createCategory, Roles.ADMIN);
+        app.delete("/categories/{id}", CategoryController.deleteCategory, Roles.ADMIN);
+
+
         Runtime.getRuntime().addShutdownHook(new Thread(MongoDBConnection::close));
 
 
     }
-
-
 }
