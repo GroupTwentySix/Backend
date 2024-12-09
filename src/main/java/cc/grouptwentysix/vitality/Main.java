@@ -4,6 +4,7 @@ import cc.grouptwentysix.vitality.auth.AuthController;
 import cc.grouptwentysix.vitality.auth.jwt.JWTProvider;
 import cc.grouptwentysix.vitality.auth.jwt.JavalinJWT;
 import cc.grouptwentysix.vitality.controller.CategoryController;
+import cc.grouptwentysix.vitality.controller.ContactController;
 import cc.grouptwentysix.vitality.controller.ProductController;
 import cc.grouptwentysix.vitality.database.MongoDBConnection;
 import cc.grouptwentysix.vitality.model.User;
@@ -72,6 +73,9 @@ public class Main {
         app.get("/categories", CategoryController.getAllCategories);
         app.post("/categories", CategoryController.createCategory, Roles.ADMIN);
         app.delete("/categories/{id}", CategoryController.deleteCategory, Roles.ADMIN);
+        app.post("/contact", ContactController.submitContact);
+
+        app.get("/products/search", ProductController.searchProducts);
 
 
         Runtime.getRuntime().addShutdownHook(new Thread(MongoDBConnection::close));

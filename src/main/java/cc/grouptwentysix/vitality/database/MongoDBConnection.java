@@ -50,6 +50,10 @@ public class MongoDBConnection {
         return database.getCollection("categories");
     }
 
+    public static MongoCollection<Document> getContactsCollection() {
+        return database.getCollection("contacts");
+    }
+
     public static void close() {
         if (mongoClient != null) {
             mongoClient.close();

@@ -230,14 +230,13 @@ public class ProductController {
         MongoCollection<Document> products = MongoDBConnection.getProductsCollection();
         List<Product> productList = new ArrayList<>();
         for (Document doc : products.find(Filters.regex("name", query, "i"))) {
-            Integer quantity = doc.containsKey("quantity") ? doc.getInteger("quantity") : null;
             Product product = new Product(
                     doc.getObjectId("_id").toString(),
                     doc.getString("name"),
                     doc.getString("description"),
                     doc.getString("imageUrl"),
                     doc.getDouble("price"),
-                    quantity
+                    0 // fix nullability.
             );
             productList.add(product);
         }
