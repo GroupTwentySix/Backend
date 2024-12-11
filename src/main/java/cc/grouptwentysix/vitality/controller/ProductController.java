@@ -29,12 +29,15 @@ public class ProductController {
         MongoCollection<Document> products = MongoDBConnection.getProductsCollection();
         List<Product> productList = new ArrayList<>();
         for (Document doc : products.find()) {
+            Number priceNumber = (Number) doc.get("price");
+            double price = priceNumber.doubleValue();
+            
             Product product = new Product(
                     doc.getObjectId("_id").toString(),
                     doc.getString("name"),
                     doc.getString("description"),
                     doc.getString("imageUrl"),
-                    doc.getDouble("price"),
+                    price,
                     1
             );
             productList.add(product);
