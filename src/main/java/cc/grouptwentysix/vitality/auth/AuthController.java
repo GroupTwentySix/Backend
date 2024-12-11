@@ -77,6 +77,7 @@ public class AuthController {
                 ctx.status(201).result("User registered successfully. Please check your email to verify your account.");
             } catch (Exception e) {
                 ctx.status(500).result("User registered, but failed to send verification email. Please contact support.");
+                e.printStackTrace(); // email registration not working, add verbose log. //todo: remove
             }
         }
     };
@@ -102,6 +103,8 @@ public class AuthController {
             throw new UnauthorizedResponse("Invalid credentials");
         }
     };
+
+
 
     public static Handler userInfo = ctx -> {
         String username = JavalinJWT.getDecodedFromContext(ctx).getClaim("username").asString();
@@ -134,21 +137,20 @@ public class AuthController {
     public static Handler verifyEmail = ctx -> {
         String token = ctx.queryParam("token");
         if (token == null || token.isEmpty()) {
-            ctx.status(400).result("Invalid verification token");
+            ctx.status(400).result("Verification token is required");
             return;
         }
 
         MongoCollection<Document> users = MongoDBConnection.getUsersCollection();
-        Document userDoc = users.findOneAndUpdate(
-            Filters.eq("verificationToken", token),
-            new Document("$set", new Document("emailVerified", true).append("verificationToken", null))
-        );
+        Document user = users.find(Filters.eq("verificationToken", token)).first();
 
-        if (userDoc != null) {
-            ctx.result("Email verified successfully. You can now log in.");
-        } else {
-            ctx.status(400).result("Invalid or expired verification token");
+        if (user == null) {
+            ctx.status(404).result("Invalid or expired verification token");
+            return;
         }
+
+        users.updateOne(Filters.eq("verificationToken", token), new Document("$set", new Document("emailVerified", true)));
+        ctx.status(200).result("Email verified successfully");
     };
 
     public static Roles getUserRole(Context ctx) {

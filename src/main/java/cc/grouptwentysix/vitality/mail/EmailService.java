@@ -11,7 +11,7 @@ import static cc.grouptwentysix.vitality.Main.dotenv;
 
 public class EmailService {
     private static final String RESEND_API_KEY = dotenv.get("RESEND_API_KEY");
-    private static final String FROM_EMAIL = "noreply@vitality.dev";
+    private static final String FROM_EMAIL = "noreply@vitality-skincare.co.uk";
 
     private final Resend resend;
 
@@ -21,8 +21,7 @@ public class EmailService {
 
     public void sendVerificationEmail(Context ctx, String to, String username, String verificationToken) throws ResendException {
         String subject = "Verify your email for Vitality";
-        String baseUrl = ctx.url();
-        String verificationLink = baseUrl + "/verify?token=" + verificationToken;
+        String verificationLink = "https://vitality-skincare.co.uk/email-verified?token=" + verificationToken;
         String content = String.format(
                 "<p>Hello %s,</p><p>Please click the following link to verify your email: <a href=\"%s\">Verify Email</a></p>",
                 username, verificationLink

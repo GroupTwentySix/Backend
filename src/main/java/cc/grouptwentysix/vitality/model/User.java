@@ -4,6 +4,8 @@ import java.util.List;
 
 public class User {
     private String id;
+    private String firstName;
+    private String lastName;
     private String username;
     private String email;
     private String password;
@@ -93,7 +95,21 @@ public class User {
         this.verificationToken = verificationToken;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
     @Override
     public String toString() {
