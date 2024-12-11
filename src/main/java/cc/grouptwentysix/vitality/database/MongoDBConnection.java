@@ -54,6 +54,10 @@ public class MongoDBConnection {
         return database.getCollection("contacts");
     }
 
+    public static MongoCollection<Document> getMailingListCollection() {
+        return database.getCollection("mailing_list");
+    }
+
     public static void close() {
         if (mongoClient != null) {
             mongoClient.close();

@@ -5,6 +5,7 @@ import cc.grouptwentysix.vitality.auth.jwt.JWTProvider;
 import cc.grouptwentysix.vitality.auth.jwt.JavalinJWT;
 import cc.grouptwentysix.vitality.controller.CategoryController;
 import cc.grouptwentysix.vitality.controller.ContactController;
+import cc.grouptwentysix.vitality.controller.MailingListController;
 import cc.grouptwentysix.vitality.controller.ProductController;
 import cc.grouptwentysix.vitality.database.MongoDBConnection;
 import cc.grouptwentysix.vitality.model.User;
@@ -77,6 +78,9 @@ public class Main {
 
         app.get("/products/search", ProductController.searchProducts);
 
+        app.post("/subscribe", MailingListController.subscribe);
+
+        app.post("/admin/mailing-list/send", MailingListController.sendBulkEmail, Roles.ADMIN);
 
         Runtime.getRuntime().addShutdownHook(new Thread(MongoDBConnection::close));
 

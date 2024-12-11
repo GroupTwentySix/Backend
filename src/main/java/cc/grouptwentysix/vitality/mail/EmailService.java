@@ -6,6 +6,9 @@ import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 import io.javalin.http.Context;
+import org.bson.Document;
+import com.mongodb.client.MongoCollection;
+import cc.grouptwentysix.vitality.database.MongoDBConnection;
 
 import static cc.grouptwentysix.vitality.Main.dotenv;
 
@@ -103,5 +106,52 @@ public class EmailService {
                 .build();
 
         resend.emails().send(params);
+    }
+
+    public void sendBulkEmail(String subject, String content) throws ResendException {
+        MongoCollection<Document> mailingList = MongoDBConnection.getMailingListCollection();
+        
+        // Find all subscribers
+        mailingList.find().forEach(subscriber -> {
+            String email = subscriber.getString("email");
+            try {
+                CreateEmailOptions options = CreateEmailOptions.builder()
+                        .from(FROM_EMAIL)
+                        .to(email)
+                        .subject(subject)
+                        .html(content)
+                        .build();
+                
+                resend.emails().send(options);
+            } catch (ResendException e) {
+                System.err.println("Failed to send email to: " + email);
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void sendMailingListWelcome(String email) throws ResendException {
+        String subject = "Welcome to Vitality Skincare's Mailing List";
+        String content = """
+                <h2>Welcome to Vitality Skincare!</h2>
+                <p>Thank you for subscribing to our mailing list. You'll be the first to know about:</p>
+                <ul>
+                    <li>New product launches</li>
+                    <li>Exclusive offers</li>
+                    <li>Skincare tips and advice</li>
+                    <li>Special promotions</li>
+                </ul>
+                <p>We're excited to have you join our community!</p>
+                <p>Best regards,<br>The Vitality Skincare Team</p>
+                """;
+
+        CreateEmailOptions options = CreateEmailOptions.builder()
+                .from(FROM_EMAIL)
+                .to(email)
+                .subject(subject)
+                .html(content)
+                .build();
+                
+        resend.emails().send(options);
     }
 }
