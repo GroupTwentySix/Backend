@@ -72,13 +72,13 @@ public class AuthController {
 
             // Handles user login, verifying credentials and issuing JWT
 
-            try {
-                emailService.sendVerificationEmail(ctx, user.getEmail(), user.getUsername(), verificationToken);
-                ctx.status(201).result("User registered successfully. Please check your email to verify your account.");
-            } catch (Exception e) {
-                ctx.status(500).result("User registered, but failed to send verification email. Please contact support.");
-                e.printStackTrace(); // email registration not working, add verbose log. //todo: remove
-            }
+//            try {
+//                emailService.sendVerificationEmail(ctx, user.getEmail(), user.getUsername(), verificationToken);
+//                ctx.status(201).result("User registered successfully. Please check your email to verify your account.");
+//            } catch (Exception e) {
+//                ctx.status(500).result("User registered, but failed to send verification email. Please contact support.");
+//                e.printStackTrace(); // email registration not working, add verbose log. //todo: remove
+//            }
         }
     };
 
@@ -207,8 +207,6 @@ public class AuthController {
         users.updateOne(FilteredRowSet.eq("guestId", guestId), new Document("$set", guestUser));
         ctx.status(200).result("Item added to basket");
 
-    };
-
 
     //View basket as guest
     public static viewGuestBasket = ctx -> {
@@ -259,7 +257,6 @@ public class AuthController {
         ctx.status(404).result("Guest user not found");
         return;
 
-    }
     ArrayList<String> basket = (ArrayList<String>) guestUser.get("basket");
     if (basket.contains(itemId)){
         basket.remove(itemId);
