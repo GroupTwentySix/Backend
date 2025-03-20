@@ -38,15 +38,25 @@ public class CategoryController {
 
     public static Handler createCategory = ctx -> {
         Category category = ctx.bodyAsClass(Category.class);
+
+        if (category.getName() == null || category.getName().isEmpty()) {
+            ctx.status(400).result("Category name is required");
+            return;
+        }
+
         Document doc = new Document()
                 .append("name", category.getName())
                 .append("description", category.getDescription());
 
         MongoCollection<Document> collection = getCategoriesCollection();
-        collection.insertOne(doc);
 
-        category.setId(doc.getObjectId("_id").toString());
-        ctx.json(category);
+        try {
+            collection.insertOne(doc);
+            category.setId(doc.getObjectId("_id").toString());
+            ctx.status(201).json(category);
+        } catch (Exception e) {
+            ctx.status(500).result("Error creating category: " + e.getMessage());
+        }
     };
 
     public static Handler deleteCategory = ctx -> {
