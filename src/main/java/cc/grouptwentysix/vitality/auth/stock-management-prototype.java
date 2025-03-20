@@ -48,3 +48,35 @@ class Database {
         collection.deleteOne(Filters.eq("_id", id));
     }
 }
+
+public class StockManagementApplication {
+    public static void main(String[] args) {
+        port(8080);
+
+        get("/products", (req, res) -> {
+            res.type("application/json");
+            return Database.getAllProducts();
+        }, new JsonTransformer());
+
+        post("/products", (req, res) -> {
+            String name = req.queryParams("name");
+            int quantity = Integer.parseInt(req.queryParams("quantity"));
+            Database.addProduct(name, quantity);
+            return "Product added";
+        });
+
+        put("/products/:id", (req, res) -> {
+            String id = req.params("id");
+            String name = req.queryParams("name");
+            int quantity = Integer.parseInt(req.queryParams("quantity"));
+            Database.updateProduct(id, name, quantity);
+            return "Product updated";
+        });
+
+        delete("/products/:id", (req, res) -> {
+            String id = req.params("id");
+            Database.deleteProduct(id);
+            return "Product deleted";
+        });
+    }
+}
