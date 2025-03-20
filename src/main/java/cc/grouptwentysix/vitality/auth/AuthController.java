@@ -72,13 +72,12 @@ public class AuthController {
 
             // Handles user login, verifying credentials and issuing JWT
 
-//            try {
-//                emailService.sendVerificationEmail(ctx, user.getEmail(), user.getUsername(), verificationToken);
-//                ctx.status(201).result("User registered successfully. Please check your email to verify your account.");
-//            } catch (Exception e) {
-//                ctx.status(500).result("User registered, but failed to send verification email. Please contact support.");
-//                e.printStackTrace(); // email registration not working, add verbose log. //todo: remove
-//            }
+            try {
+                emailService.sendVerificationEmail(ctx, user.getEmail(), user.getUsername(), verificationToken);
+                ctx.status(201).result("User registered successfully. Please check your email to verify your account.");
+            } catch (Exception e) {
+                ctx.status(500).result("User registered, but failed to send verification email. Please contact support.");
+            }
         }
     };
 
