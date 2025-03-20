@@ -14,21 +14,27 @@ import static cc.grouptwentysix.vitality.database.MongoDBConnection.getCategorie
 
 public class CategoryController {
 
-
     public static Handler getAllCategories = ctx -> {
         List<Category> categories = new ArrayList<>();
         MongoCollection<Document> collection = getCategoriesCollection();
 
-        collection.find().forEach(doc -> {
-            Category category = new Category();
-            category.setId(doc.getObjectId("_id").toString());
-            category.setName(doc.getString("name"));
-            category.setDescription(doc.getString("description"));
-            categories.add(category);
-        });
-
-        ctx.json(categories);
+        try {
+            collection.find().forEach(doc -> {
+                categories.add(mapDocumentToCategory(doc));
+            });
+            ctx.json(categories);
+        } catch (Exception e) {
+            ctx.status(500).result("Error fetching categories: " + e.getMessage());
+        }
     };
+
+    private static Category mapDocumentToCategory(Document doc) {
+        Category category = new Category();
+        category.setId(doc.getObjectId("_id").toString());
+        category.setName(doc.getString("name"));
+        category.setDescription(doc.getString("description"));
+        return category;
+    }
 
     public static Handler createCategory = ctx -> {
         Category category = ctx.bodyAsClass(Category.class);
