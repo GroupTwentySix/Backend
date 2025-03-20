@@ -15,7 +15,6 @@ public class Main {
 
     public static Dotenv dotenv;
 
-
     public static void main(String[] args) {
 
         dotenv = Dotenv.configure().ignoreIfMissing().load();
@@ -70,6 +69,4 @@ public class Main {
 
 
     }
-
-
 }
