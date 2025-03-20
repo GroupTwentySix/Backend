@@ -61,16 +61,26 @@ public class CategoryController {
 
     public static Handler deleteCategory = ctx -> {
         String id = ctx.pathParam("id");
+
+        if (!ObjectId.isValid(id)) {
+            ctx.status(400).result("Invalid category ID format");
+            return;
+        }
+
         MongoCollection<Document> collection = getCategoriesCollection();
 
-        Document result = collection.findOneAndDelete(
-                Filters.eq("_id", new ObjectId(id))
-        );
+        try {
+            Document result = collection.findOneAndDelete(
+                    Filters.eq("_id", new ObjectId(id))
+            );
 
-        if (result != null) {
-            ctx.status(204);
-        } else {
-            ctx.status(404).result("Category not found");
+            if (result != null) {
+                ctx.status(204); // No Content, successfully deleted
+            } else {
+                ctx.status(404).result("Category not found");
+            }
+        } catch (Exception e) {
+            ctx.status(500).result("Error deleting category: " + e.getMessage());
         }
     };
 }
