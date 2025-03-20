@@ -28,14 +28,6 @@ public class CategoryController {
         }
     };
 
-    private static Category mapDocumentToCategory(Document doc) {
-        Category category = new Category();
-        category.setId(doc.getObjectId("_id").toString());
-        category.setName(doc.getString("name"));
-        category.setDescription(doc.getString("description"));
-        return category;
-    }
-
     public static Handler createCategory = ctx -> {
         Category category = ctx.bodyAsClass(Category.class);
 
@@ -83,4 +75,12 @@ public class CategoryController {
             ctx.status(500).result("Error deleting category: " + e.getMessage());
         }
     };
+
+    private static Category mapDocumentToCategory(Document doc) {
+        Category category = new Category();
+        category.setId(doc.getObjectId("_id").toString());
+        category.setName(doc.getString("name"));
+        category.setDescription(doc.getString("description"));
+        return category;
+    }
 }
